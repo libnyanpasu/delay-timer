@@ -3,6 +3,7 @@
 use super::runtime_trace::task_handle::DelayTaskHandler;
 use crate::prelude::*;
 
+use std::num::NonZeroUsize;
 use std::cell::RefCell;
 use std::fmt;
 use std::fmt::Pointer;
@@ -13,7 +14,7 @@ use cron_clock::{Schedule, ScheduleIteratorOwned, Utc};
 use lru::LruCache;
 
 // Parsing cache for cron expressions, stored with thread-local storage.
-thread_local!(static CRON_EXPRESSION_CACHE: RefCell<LruCache<ScheduleIteratorTimeZoneQuery, DelayTimerScheduleIteratorOwned>> = RefCell::new(LruCache::new(256)));
+thread_local!(static CRON_EXPRESSION_CACHE: RefCell<LruCache<ScheduleIteratorTimeZoneQuery, DelayTimerScheduleIteratorOwned>> = RefCell::new(LruCache::new(NonZeroUsize::new(256).unwrap())));
 
 // TaskMark is used to maintain the status of running tasks.
 #[derive(Default, Debug)]
