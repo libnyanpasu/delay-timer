@@ -5,7 +5,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 
-use event_listener::Event;
+use event_listener::{Event, Listener};
 use future_lite::block_on;
 use smol::channel::{unbounded, Receiver, Sender};
 
@@ -165,7 +165,7 @@ impl TaskInstance {
             .event
             .listen()
             .wait_timeout(timeout)
-            .then(|| self.get_state())
+            .map(|_| self.get_state())
             .ok_or(TaskInstanceError::DisCancelTimeOut)
     }
 
