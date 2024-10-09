@@ -103,7 +103,7 @@ pub mod functions {
     #[inline(always)]
     ///convert task_handler of impl DelayTaskHandler to a `Box<dyn DelayTaskHander>`.
     pub fn create_delay_task_handler(
-        task_handle: impl DelayTaskHandler + 'static + Send + Sync,
+        task_handle: impl DelayTaskHandler + 'static,
     ) -> Box<dyn DelayTaskHandler> {
         Box::new(task_handle) as Box<dyn DelayTaskHandler>
     }

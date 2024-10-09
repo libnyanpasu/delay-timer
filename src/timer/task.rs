@@ -204,7 +204,7 @@ pub(crate) enum FrequencyInner {
     SecondsCountDown(u64, SecondsState),
 }
 
-impl<'a> TryFrom<(FrequencyUnify<'a>, ScheduleIteratorTimeZone)> for FrequencyInner {
+impl TryFrom<(FrequencyUnify<'_>, ScheduleIteratorTimeZone)> for FrequencyInner {
     type Error = FrequencyAnalyzeError;
 
     fn try_from(
@@ -385,9 +385,8 @@ impl DelayTimerScheduleIteratorOwned {
             let new_result =
                 DelayTimerScheduleIteratorOwned::new(schedule_iterator_time_zone_query.clone());
 
-            new_result.map(|task_schedule| {
+            new_result.inspect(|task_schedule| {
                 lru_cache.put(schedule_iterator_time_zone_query, task_schedule.clone());
-                task_schedule
             })
         })?;
 

@@ -192,7 +192,9 @@
 //! use std::time::Duration;
 //! use smol::Timer;
 //! use tokio::time::sleep;
-//! use hyper::{Client, Uri};
+//! use http_body_util::{BodyExt, Empty};
+//! use hyper::{body::Bytes, Uri};
+//! use hyper_util::{client::legacy::Client, rt::TokioExecutor};
 //!
 //!
 //!
@@ -217,7 +219,7 @@
 //!
 //!
 //!  pub async fn async_template(id: i32, name: String) -> Result<()> {
-//!      let client = Client::new();
+//!      let client = Client::builder(TokioExecutor::new()).build_http::<Empty<Bytes>>();
 //!  
 //!      // The default connector does not handle TLS.
 //!      // Speaking to https destinations will require configuring a connector that implements TLS.
@@ -228,7 +230,7 @@
 //!      let res = client.get(uri).await?;
 //!      println!("Response: {}", res.status());
 //!      // Concatenate the body stream into a single buffer...
-//!      let buf = hyper::body::to_bytes(res).await?;
+//!      let buf = res.into_body().collect().await?.to_bytes();
 //!      println!("body: {:?}", buf);
 //!      Ok(())
 //!  }

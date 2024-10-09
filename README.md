@@ -170,7 +170,10 @@ fn build_task_async_print() -> Result<Task, TaskError> {
  ``` rust
  #[macro_use]
  use delay_timer::prelude::*;
- use hyper::{Client, Uri};
+ use http_body_util::{BodyExt, Empty};
+ use hyper::{body::Bytes, Uri};
+ use hyper_util::{client::legacy::Client, rt::TokioExecutor};
+ 
 
 fn build_task_customized_async_task() -> Result<Task, TaskError> {
     let id = 1;

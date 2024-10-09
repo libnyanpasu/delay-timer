@@ -2,7 +2,12 @@ use anyhow::Result;
 use delay_timer::prelude::*;
 #[allow(deprecated)]
 use delay_timer::utils::convenience::functions::unblock_process_task_fn;
-use hyper::{Client, Uri};
+use http_body_util::{combinators::BoxBody, BodyExt, Empty};
+use hyper::{
+    body::{Body, Bytes},
+    Uri,
+};
+use hyper_util::{client::legacy::Client, rt::TokioExecutor};
 use std::time::Duration;
 use tokio::time::sleep;
 use tracing::Level;
@@ -95,7 +100,7 @@ fn build_task_async_execute_process() -> Result<Task, TaskError> {
 }
 
 pub async fn async_template(id: i32, name: String) -> Result<()> {
-    let client = Client::new();
+    let client = Client::builder(TokioExecutor::new()).build_http::<Empty<Bytes>>();
 
     // The default connector does not handle TLS.
     // Speaking to https destinations will require configuring a connector that implements TLS.
@@ -106,7 +111,7 @@ pub async fn async_template(id: i32, name: String) -> Result<()> {
     let res = client.get(uri).await?;
     println!("Response: {}", res.status());
     // Concatenate the body stream into a single buffer...
-    let buf = hyper::body::to_bytes(res).await?;
+    let buf = res.into_body().collect().await?.to_bytes();
     println!("body: {buf:?}");
     Ok(())
 }
